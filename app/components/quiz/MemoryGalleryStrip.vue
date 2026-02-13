@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {homeMemoryCards} from '~/data/memories'
-import {quizQuestions} from '~/data/questions'
+import { homeMemoryCards } from '~/data/memories'
+import { quizQuestions } from '~/data/questions'
 
 type GalleryItem = {
   type: 'image' | 'video'
@@ -40,8 +40,8 @@ const quizMomentTitles = [
 
 const quizMomentTexts = [
   'Этот кадр как напоминание, что с тобой мир звучит мягче.',
-  'Когда мы вместе, и понимаем друг друга с полу слова.',
   'В таких моментах я особенно ясно чувствую, как нам спокойно вдвоем.',
+  'Когда мы смеемся вместе, даже обычный день становится праздником.',
   'Пусть эта картинка хранит ту нежность, которую мы создаем каждый день.',
   'Иногда одна деталь говорит о любви больше, чем длинные слова.',
   'Здесь живет наше тихое счастье, простое и очень настоящее.',
@@ -150,7 +150,7 @@ const galleryItems = computed<GalleryItem[]>(() => {
   })
 
   return items
-    .map(item => ({item, order: hashString(item.src)}))
+    .map(item => ({ item, order: hashString(item.src) }))
     .sort((a, b) => a.order - b.order)
     .map(entry => entry.item)
 })
@@ -229,16 +229,19 @@ const tileSizeClasses = computed(() => {
             />
           </template>
           <template v-else>
-            <video
+            <UiOptimizedImage
+              kind="video"
               :src="item.src"
-              muted
-              playsinline
+              :alt="item.title"
+              :muted="true"
+              :playsinline="true"
               preload="metadata"
-              class="h-full w-full object-cover object-center"
+              image-class="h-full w-full object-cover object-center"
             />
             <div class="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
               <span
-                class="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-stone-700">
+                class="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-stone-700"
+              >
                 Video
               </span>
             </div>
@@ -259,7 +262,8 @@ const tileSizeClasses = computed(() => {
       @click.self="closeCard"
     >
       <article
-        class="w-full max-w-xs rounded-2xl border border-stone-200 bg-white p-3 shadow-[0_16px_40px_rgba(0,0,0,0.2)] sm:p-4">
+        class="w-full max-w-xs rounded-2xl border border-stone-200 bg-white p-3 shadow-[0_16px_40px_rgba(0,0,0,0.2)] sm:p-4"
+      >
         <template v-if="openedCard.type === 'image'">
           <UiOptimizedImage
             :src="openedCard.src"
@@ -269,14 +273,16 @@ const tileSizeClasses = computed(() => {
           />
         </template>
         <template v-else>
-          <video
+          <UiOptimizedImage
+            kind="video"
             :src="openedCard.src"
-            controls
-            autoplay
-            muted
-            playsinline
+            :alt="openedCard.title"
+            :controls="true"
+            :autoplay="true"
+            :muted="true"
+            :playsinline="true"
             preload="metadata"
-            class="h-64 w-full rounded-xl bg-black object-cover object-center sm:h-72"
+            image-class="h-64 w-full rounded-xl bg-black object-cover object-center sm:h-72"
           />
         </template>
 

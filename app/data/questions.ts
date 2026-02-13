@@ -17,8 +17,8 @@ export const quizQuestions: QuizQuestion[] = [
     prompt: 'Самый тёплый момент, который я вызываю в твоей памяти — это…',
     choices: [
       { id: 'a', label: 'Как мы лежим под солнцем и пьем молочный коктейль', isCorrect: true },
-      { id: 'b', label: 'Когда я громко ем чипсы в 2 ночи', isCorrect: false },
-      { id: 'c', label: 'Наш спор о том, чья очередь мыть посуду', isCorrect: false }
+      { id: 'b', label: 'Наш спор о том, чья очередь мыть посуду', isCorrect: false },
+      { id: 'c', label: 'Когда я громко ем чипсы в 2 ночи', isCorrect: false }
     ]
   },
   {
@@ -36,8 +36,8 @@ export const quizQuestions: QuizQuestion[] = [
     image: '/placeholders/quiz-4.svg',
     prompt: 'Если описать наш мир на двоих одним ощущением, каким он будет?',
     choices: [
-      { id: 'a', label: 'Тёплым, безопасным и живым', isCorrect: true },
-      { id: 'b', label: 'Случайным и непредсказуемым', isCorrect: false },
+      { id: 'a', label: 'Случайным и непредсказуемым', isCorrect: false },
+      { id: 'b', label: 'Тёплым, безопасным и живым', isCorrect: true },
       { id: 'c', label: 'Сдержанным и формальным', isCorrect: false }
     ]
   },
@@ -56,8 +56,8 @@ export const quizQuestions: QuizQuestion[] = [
     image: '/placeholders/quiz-6.svg',
     prompt: 'Какая мелочь от тебя для меня значит намного больше, чем кажется?',
     choices: [
-      { id: 'a', label: 'Твоё короткое «все хорошо?» в нужный момент', isCorrect: true },
-      { id: 'b', label: 'Скидка в приложении магазина', isCorrect: false },
+      { id: 'a', label: 'Скидка в приложении магазина', isCorrect: false },
+      { id: 'b', label: 'Твоё короткое «все хорошо?» в нужный момент', isCorrect: true },
       { id: 'c', label: 'Уведомление о погоде', isCorrect: false }
     ]
   },
@@ -66,9 +66,9 @@ export const quizQuestions: QuizQuestion[] = [
     image: '/placeholders/quiz-7.svg',
     prompt: 'Когда я особенно остро понимаю, как сильно люблю тебя?',
     choices: [
-      { id: 'a', label: 'Когда вижу твою заботу в деталях, которые замечаем только мы', isCorrect: true },
-      { id: 'b', label: 'Когда выигрываю спор', isCorrect: false },
-      { id: 'c', label: 'Когда нахожу мелочь в кармане', isCorrect: false }
+      { id: 'a', label: 'Когда выигрываю спор', isCorrect: false },
+      { id: 'b', label: 'Когда нахожу мелочь в кармане', isCorrect: false },
+      { id: 'c', label: 'Когда вижу твою заботу в деталях, которые замечаем только мы', isCorrect: true },
     ]
   },
   {
@@ -76,8 +76,8 @@ export const quizQuestions: QuizQuestion[] = [
     image: '/placeholders/quiz-8.svg',
     prompt: 'Готова открыть место, где продолжится наша история и появится ещё один тёплый вечер на двоих?',
     choices: [
-      { id: 'a', label: 'Да. С тобой — в каждый следующий момент.', isCorrect: true },
-      { id: 'b', label: 'Когда-нибудь потом', isCorrect: false },
+      { id: 'a', label: 'Когда-нибудь потом', isCorrect: false },
+      { id: 'b', label: 'Да. С тобой — в каждый следующий момент.', isCorrect: true },
       { id: 'c', label: 'Только после трёх напоминаний', isCorrect: false }
     ]
   }

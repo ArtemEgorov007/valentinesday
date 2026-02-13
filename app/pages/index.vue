@@ -6,7 +6,6 @@ const featuredMemoryCards = computed(() => memoryCards.slice(0, 3))
 
 <template>
   <main class="relative min-h-screen px-3 pb-14 pt-12 sm:px-6 sm:pt-16">
-
     <section class="mx-auto w-full max-w-4xl space-y-4 sm:space-y-6">
       <header class="rounded-2xl border border-stone-200 bg-white p-5 shadow-[0_10px_28px_rgba(0,0,0,0.05)] sm:p-7">
         <p class="text-sm text-stone-500">
@@ -31,7 +30,7 @@ const featuredMemoryCards = computed(() => memoryCards.slice(0, 3))
 
       <section class="grid gap-4 sm:grid-cols-3">
         <article
-          v-for="(item, index) in featuredMemoryCards"
+          v-for="item in featuredMemoryCards"
           :key="item.title"
           class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-[0_8px_24px_rgba(0,0,0,0.05)]"
         >
