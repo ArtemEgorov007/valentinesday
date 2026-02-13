@@ -3,7 +3,7 @@ import type { QuizQuestion } from '~/types/quiz'
 const STARTING_BALANCE = 0
 const CORRECT_REWARD = 50
 const WRONG_PENALTY = -10
-const FINAL_THRESHOLD = 250
+const FINAL_THRESHOLD = 400
 const ANSWER_LOCK_MS = 1000
 
 export function useGameState() {

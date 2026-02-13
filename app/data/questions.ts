@@ -68,7 +68,7 @@ export const quizQuestions: QuizQuestion[] = [
     choices: [
       { id: 'a', label: 'Когда выигрываю спор', isCorrect: false },
       { id: 'b', label: 'Когда нахожу мелочь в кармане', isCorrect: false },
-      { id: 'c', label: 'Когда вижу твою заботу в деталях, которые замечаем только мы', isCorrect: true },
+      { id: 'c', label: 'Когда вижу твою заботу в деталях, которые замечаем только мы', isCorrect: true }
     ]
   },
   {

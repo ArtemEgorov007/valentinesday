@@ -32,14 +32,14 @@ const featuredMemoryCards = computed(() => memoryCards.slice(0, 3))
         <article
           v-for="item in featuredMemoryCards"
           :key="item.title"
-          class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-[0_8px_24px_rgba(0,0,0,0.05)]"
+          class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-[0_8px_24px_rgba(0,0,0,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(0,0,0,0.10)]"
         >
           <UiOptimizedImage
             :src="item.image"
             :alt="item.title"
-            image-class="h-64 w-full object-cover object-center sm:h-72"
+            image-class="h-48 w-full bg-stone-100 object-contain p-1 sm:h-72 sm:bg-transparent sm:object-cover sm:p-0"
           />
-          <div class="p-4">
+          <div class="p-3 sm:p-4">
             <p class="text-xs text-stone-500">
               Воспоминание
             </p>

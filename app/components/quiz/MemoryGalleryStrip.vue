@@ -217,7 +217,7 @@ const tileSizeClasses = computed(() => {
           v-for="(item, index) in galleryItems"
           :key="`${item.type}-${item.src}`"
           type="button"
-          class="group relative overflow-hidden border border-stone-100 bg-stone-100"
+          class="group relative cursor-pointer overflow-hidden border border-stone-100 bg-stone-100 transition duration-300 hover:z-10 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(0,0,0,0.20)]"
           :class="tileSizeClasses[index] ?? 'col-span-1 row-span-1'"
           @click="openCard(index)"
         >
@@ -225,7 +225,7 @@ const tileSizeClasses = computed(() => {
             <UiOptimizedImage
               :src="item.src"
               :alt="item.title"
-              image-class="h-full w-full object-cover object-center transition duration-300 group-hover:scale-[1.01]"
+              image-class="h-full w-full object-cover object-center"
             />
           </template>
           <template v-else>
@@ -295,7 +295,7 @@ const tileSizeClasses = computed(() => {
 
         <button
           type="button"
-          class="mt-3 inline-flex rounded-lg border border-stone-300 px-3 py-1.5 text-sm text-stone-600 transition hover:bg-stone-100"
+          class="mt-3 inline-flex cursor-pointer rounded-lg border border-stone-300 px-3 py-1.5 text-sm text-stone-600 hover:bg-stone-100"
           @click="closeCard"
         >
           Закрыть

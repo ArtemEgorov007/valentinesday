@@ -10,7 +10,6 @@ const props = withDefaults(defineProps<{
 const floatingDelta = ref<number | null>(null)
 const floatingKey = ref(0)
 const floatingTimer = ref<ReturnType<typeof setTimeout> | null>(null)
-
 const pulseClass = computed(() => {
   if (props.delta > 0) {
     return 'scale-110 border-emerald-400 bg-emerald-50 shadow-[0_16px_40px_rgba(16,185,129,0.35)]'

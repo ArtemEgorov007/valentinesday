@@ -12,20 +12,11 @@ body,
 
 body {
   color: #1c1917;
-  background: #f7f5f4;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(251, 207, 232, 0.32) 0%, rgba(251, 207, 232, 0) 36%),
+    radial-gradient(circle at 84% 14%, rgba(254, 202, 202, 0.2) 0%, rgba(254, 202, 202, 0) 33%),
+    linear-gradient(180deg, #faf7f6 0%, #f5f3f2 100%);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-}
-
-.page-soft-enter-active,
-.page-soft-leave-active {
-  transition: opacity 0.35s ease, transform 0.35s ease, filter 0.35s ease;
-}
-
-.page-soft-enter-from,
-.page-soft-leave-to {
-  opacity: 0;
-  transform: translateY(10px) scale(0.995);
-  filter: blur(2px);
 }

@@ -90,35 +90,19 @@ function onChoose(choiceId: string) {
         {{ props.question.prompt }}
       </h2>
 
-      <TransitionGroup
-        name="choice-stagger"
-        tag="div"
-        class="space-y-2.5"
-      >
+      <div class="space-y-2.5">
         <button
-          v-for="(choice, index) in props.question.choices"
+          v-for="choice in props.question.choices"
           :key="choice.id"
           type="button"
           :disabled="props.isAnswerLocked"
-          class="w-full rounded-xl cursor-pointer border px-3.5 py-3 text-left text-sm text-stone-700 transition duration-200 disabled:cursor-not-allowed sm:text-base"
+          class="w-full rounded-xl cursor-pointer border px-3.5 py-3 text-left text-sm text-stone-700 disabled:cursor-not-allowed sm:text-base"
           :class="choiceClass(choice.id, choice.isCorrect)"
-          :style="{ transitionDelay: `${index * 35}ms` }"
           @click="onChoose(choice.id)"
         >
           {{ choice.label }}
         </button>
-      </TransitionGroup>
+      </div>
     </div>
   </article>
 </template>
-
-<style scoped>
-.choice-stagger-enter-active {
-  transition: opacity 0.24s ease, transform 0.24s ease;
-}
-
-.choice-stagger-enter-from {
-  opacity: 0;
-  transform: translateY(6px);
-}
-</style>

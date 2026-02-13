@@ -18,7 +18,7 @@ const progressScale = computed(() => (props.current + 1) / props.total)
     </div>
     <div class="h-1.5 overflow-hidden rounded-full bg-stone-200">
       <div
-        class="h-full origin-left rounded-full bg-stone-700 transition-transform duration-300"
+        class="h-full origin-left rounded-full bg-stone-700"
         :style="{ transform: `scaleX(${progressScale})` }"
       />
     </div>

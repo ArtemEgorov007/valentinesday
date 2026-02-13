@@ -36,8 +36,9 @@ const {
 } = useMeetingReminder(destinationAddress)
 
 const lastDelta = ref(0)
-const unlockCelebrationCounter = ref(0)
 const deltaResetTimer = ref<ReturnType<typeof setTimeout> | null>(null)
+const refusalModalVisible = ref(false)
+const runawayYesStyle = ref({ transform: 'translate(0px, 0px)' })
 
 const currentQuestion = computed<QuizQuestion>(() => quizQuestions[currentQuestionIndex.value] ?? quizQuestions[0]!)
 const isLastQuestion = computed(() => currentQuestionIndex.value === quizQuestions.length - 1)
@@ -63,18 +64,32 @@ watch(currentQuestion, (question) => {
   syncQuestionState(question)
 }, { immediate: true })
 
-watch(currentQuestionIndex, (next, prev) => {
-  questionTransitionName.value = next >= prev ? 'question-next' : 'question-prev'
-})
-
 watch(unlocked, (isUnlocked) => {
   if (isUnlocked) {
     triggerOnUnlock()
   }
 })
 
+watch(currentQuestionIndex, (next, prev) => {
+  questionTransitionName.value = next >= prev ? 'question-next' : 'question-prev'
+  refusalModalVisible.value = false
+  runawayYesStyle.value = { transform: 'translate(0px, 0px)' }
+})
+
 function onChoose(choiceId: string) {
   if (!currentQuestion.value) {
+    return
+  }
+
+  const selectedChoice = currentQuestion.value.choices.find(item => item.id === choiceId)
+  if (!selectedChoice) {
+    return
+  }
+
+  const isFinalQuestion = currentQuestion.value.id === quizQuestions.length
+  if (isFinalQuestion && !selectedChoice.isCorrect) {
+    refusalModalVisible.value = true
+    moveRunawayYesButton()
     return
   }
 
@@ -104,7 +119,6 @@ function onNext() {
       return
     }
 
-    unlockCelebrationCounter.value += 1
     return
   }
 
@@ -118,8 +132,17 @@ function onBack() {
 function restartGame() {
   resetGame()
   lastDelta.value = 0
-  unlockCelebrationCounter.value = 0
+  refusalModalVisible.value = false
+  runawayYesStyle.value = { transform: 'translate(0px, 0px)' }
   closeReminder()
+}
+
+function moveRunawayYesButton() {
+  const x = Math.floor(Math.random() * 140) - 70
+  const y = Math.floor(Math.random() * 34) - 17
+  runawayYesStyle.value = {
+    transform: `translate(${x}px, ${y}px)`
+  }
 }
 
 function openMaps() {
@@ -145,7 +168,7 @@ onBeforeUnmount(() => {
   <main class="relative min-h-screen px-3 pb-16 pt-16 sm:px-6 sm:pt-20">
     <NuxtLink
       to="/"
-      class="fixed left-3 top-3 z-40 inline-flex items-center rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm font-medium text-stone-700 shadow-[0_10px_25px_rgba(0,0,0,0.08)] transition duration-300 hover:-translate-y-0.5 hover:bg-stone-50 sm:left-6 sm:top-10"
+      class="fixed left-3 top-3 z-40 inline-flex items-center rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm font-medium text-stone-700 shadow-[0_10px_25px_rgba(0,0,0,0.08)] hover:bg-stone-50 sm:left-6 sm:top-10"
     >
       На главную
     </NuxtLink>
@@ -153,7 +176,6 @@ onBeforeUnmount(() => {
       :value="coins"
       :delta="lastDelta"
     />
-    <UiHeartBurst :trigger="unlockCelebrationCounter" />
 
     <QuizMeetingReminderModal
       :visible="showReminderModal"
@@ -162,128 +184,161 @@ onBeforeUnmount(() => {
       @google="openGoogleCalendar"
       @ics="downloadIcsReminder"
     />
-
-    <section class="mx-auto w-full max-w-2xl">
-      <Transition
-        name="fade-up"
-        mode="out-in"
+    <Transition name="fade-up">
+      <div
+        v-if="refusalModalVisible"
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/25 p-4"
       >
-        <article
-          v-if="!unlocked"
-          key="quiz"
-          class="space-y-4"
-        >
-          <header class="rounded-2xl border border-stone-200 bg-white p-4 shadow-[0_10px_28px_rgba(0,0,0,0.05)] sm:p-6">
-            <p class="text-sm text-stone-500">
-              Для тебя
-            </p>
-            <h1 class="mt-2 text-2xl font-semibold leading-tight text-stone-900 sm:text-3xl">
-              Небольшой тёплый квест о нас
-            </h1>
-            <p class="mt-2 text-sm text-stone-600 sm:text-base">
-              +{{ constants.CORRECT_REWARD }} за правильный ответ, {{ constants.WRONG_PENALTY }} за ошибку. В финале тебя ждёт место, которое я хочу разделить с тобой.
-            </p>
-          </header>
-
-          <QuizMemoryGalleryStrip />
-
-          <Transition
-            :name="questionTransitionName"
-            mode="out-in"
-          >
-            <div
-              :key="currentQuestion.id"
-              class="space-y-4"
-            >
-              <div class="rounded-2xl border border-stone-200 bg-white p-4 shadow-[0_10px_28px_rgba(0,0,0,0.05)] sm:p-5">
-                <QuizQuestionProgress
-                  :current="currentQuestionIndex"
-                  :total="quizQuestions.length"
-                />
-              </div>
-
-              <QuizQuestionCard
-                :question="currentQuestion"
-                :selected-choice-id="selectedChoiceId"
-                :answer-resolved="answerResolved"
-                :is-answer-locked="isAnswerLocked"
-                @choose="onChoose"
-              />
-
-              <UiLockBadge
-                :is-visible="isQuizComplete"
-                :is-open="hasEnoughCoins"
-              />
-
-              <div class="rounded-2xl border border-stone-200 bg-white p-4 shadow-[0_10px_28px_rgba(0,0,0,0.05)] sm:p-5">
-                <p
-                  class="text-sm text-stone-600"
-                  :class="needsMoreCoins ? 'text-amber-700' : ''"
-                >
-                  {{ statusText }}
-                </p>
-
-                <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
-                  <UiRomanticButton
-                    v-if="canGoBack"
-                    class="w-full sm:w-auto cursor-pointer"
-                    variant="secondary"
-                    @click="onBack"
-                  >
-                    Назад
-                  </UiRomanticButton>
-
-                  <UiRomanticButton
-                    class="w-full sm:w-auto cursor-pointer"
-                    :disabled="!answerResolved || isAnswerLocked || (isLastQuestion && !canUnlock)"
-                    @click="onNext"
-                  >
-                    {{ isLastQuestion ? 'Открыть финал' : 'Дальше' }}
-                  </UiRomanticButton>
-                </div>
-              </div>
-            </div>
-          </Transition>
-        </article>
-
-        <article
-          v-else
-          key="final"
-          class="rounded-2xl border border-stone-200 bg-white p-5 text-stone-800 shadow-[0_12px_32px_rgba(0,0,0,0.06)] sm:p-7"
-        >
-          <h2 class="text-2xl font-semibold sm:text-3xl">
-            Наша точка открыта
-          </h2>
-          <p class="mt-2 text-stone-600">
-            Спасибо, что прошла этот маленький путь. Теперь откроем место нашей встречи.
+        <div class="w-full max-w-sm rounded-2xl border border-stone-200 bg-white p-4 shadow-[0_20px_46px_rgba(0,0,0,0.22)] sm:p-5">
+          <p class="text-sm text-stone-500">
+            Подтверждение
+          </p>
+          <h3 class="mt-1 text-lg font-semibold text-stone-900 sm:text-xl">
+            Точно не хочешь?
+          </h3>
+          <p class="mt-2 text-sm text-stone-600">
+            Может все-таки откроем наш вечер вместе?
           </p>
 
-          <div class="mt-5 rounded-xl border border-stone-200 bg-stone-50 p-4">
-            <p class="text-sm text-stone-500">
-              Ссылка
-            </p>
-            <p class="mt-2 break-all text-sm text-stone-700 sm:text-base">
-              {{ destinationAddress }}
-            </p>
-          </div>
+          <div class="relative mt-4 h-11">
+            <button
+              type="button"
+              class="absolute left-0 top-0 cursor-pointer rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700"
+              :style="runawayYesStyle"
+              @mouseenter="moveRunawayYesButton"
+              @mousemove="moveRunawayYesButton"
+              @pointerdown.prevent="moveRunawayYesButton"
+              @click.prevent="moveRunawayYesButton"
+            >
+              Да
+            </button>
 
-          <div class="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <UiRomanticButton
-              class="w-full sm:w-auto"
-              @click="openMaps"
+            <button
+              type="button"
+              class="absolute right-0 top-0 cursor-pointer rounded-xl bg-stone-900 px-4 py-2 text-sm font-semibold text-white hover:bg-stone-800"
+              @click="refusalModalVisible = false"
             >
-              Открыть место в картах
-            </UiRomanticButton>
-            <UiRomanticButton
-              class="w-full sm:w-auto"
-              variant="secondary"
-              @click="restartGame"
-            >
-              Пройти ещё раз
-            </UiRomanticButton>
+              Нет
+            </button>
           </div>
-        </article>
-      </Transition>
+        </div>
+      </div>
+    </Transition>
+
+    <section class="mx-auto w-full max-w-2xl">
+      <article
+        v-if="!unlocked"
+        class="space-y-4"
+      >
+        <header class="rounded-2xl border border-stone-200 bg-white p-4 shadow-[0_10px_28px_rgba(0,0,0,0.05)] sm:p-6">
+          <p class="text-sm text-stone-500">
+            Для тебя
+          </p>
+          <h1 class="mt-2 text-2xl font-semibold leading-tight text-stone-900 sm:text-3xl">
+            Небольшой тёплый квест о нас
+          </h1>
+          <p class="mt-2 text-sm text-stone-600 sm:text-base">
+            +{{ constants.CORRECT_REWARD }} за правильный ответ, {{ constants.WRONG_PENALTY }} за ошибку. В финале тебя ждёт место, которое я хочу разделить с тобой.
+          </p>
+        </header>
+
+        <QuizMemoryGalleryStrip />
+
+        <Transition
+          :name="questionTransitionName"
+          mode="out-in"
+        >
+          <div
+            :key="currentQuestion.id"
+            class="space-y-4"
+          >
+            <div class="rounded-2xl border border-stone-200 bg-white p-4 shadow-[0_10px_28px_rgba(0,0,0,0.05)] sm:p-5">
+              <QuizQuestionProgress
+                :current="currentQuestionIndex"
+                :total="quizQuestions.length"
+              />
+            </div>
+
+            <QuizQuestionCard
+              :question="currentQuestion"
+              :selected-choice-id="selectedChoiceId"
+              :answer-resolved="answerResolved"
+              :is-answer-locked="isAnswerLocked"
+              @choose="onChoose"
+            />
+
+            <UiLockBadge
+              :is-visible="isQuizComplete"
+              :is-open="hasEnoughCoins"
+            />
+
+            <div class="rounded-2xl border border-stone-200 bg-white p-4 shadow-[0_10px_28px_rgba(0,0,0,0.05)] sm:p-5">
+              <p
+                class="text-sm text-stone-600"
+                :class="needsMoreCoins ? 'text-amber-700' : ''"
+              >
+                {{ statusText }}
+              </p>
+
+              <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
+                <UiRomanticButton
+                  v-if="canGoBack"
+                  class="w-full sm:w-auto cursor-pointer"
+                  variant="secondary"
+                  @click="onBack"
+                >
+                  Назад
+                </UiRomanticButton>
+
+                <UiRomanticButton
+                  class="w-full sm:w-auto cursor-pointer"
+                  :disabled="!answerResolved || isAnswerLocked || (isLastQuestion && !canUnlock)"
+                  @click="onNext"
+                >
+                  {{ isLastQuestion ? 'Открыть финал' : 'Дальше' }}
+                </UiRomanticButton>
+              </div>
+            </div>
+          </div>
+        </Transition>
+      </article>
+
+      <article
+        v-else
+        class="rounded-2xl border border-stone-200 bg-white p-5 text-stone-800 shadow-[0_12px_32px_rgba(0,0,0,0.06)] sm:p-7"
+      >
+        <h2 class="text-2xl font-semibold sm:text-3xl">
+          Наша точка открыта
+        </h2>
+        <p class="mt-2 text-stone-600">
+          Спасибо, что прошла этот маленький путь. Теперь откроем место нашей встречи.
+        </p>
+
+        <div class="mt-5 rounded-xl border border-stone-200 bg-stone-50 p-4">
+          <p class="text-sm text-stone-500">
+            Ссылка
+          </p>
+          <p class="mt-2 break-all text-sm text-stone-700 sm:text-base">
+            {{ destinationAddress }}
+          </p>
+        </div>
+
+        <div class="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <UiRomanticButton
+            class="w-full sm:w-auto"
+            @click="openMaps"
+          >
+            Открыть место в картах
+          </UiRomanticButton>
+          <UiRomanticButton
+            class="w-full sm:w-auto"
+            variant="secondary"
+            @click="restartGame"
+          >
+            Пройти ещё раз
+          </UiRomanticButton>
+        </div>
+      </article>
     </section>
   </main>
 </template>
@@ -291,13 +346,13 @@ onBeforeUnmount(() => {
 <style scoped>
 .fade-up-enter-active,
 .fade-up-leave-active {
-  transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1), transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.24s ease, transform 0.24s ease;
 }
 
 .fade-up-enter-from,
 .fade-up-leave-to {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(8px);
 }
 
 .question-next-enter-active,

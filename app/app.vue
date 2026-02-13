@@ -1,10 +1,6 @@
 <script setup lang="ts">
 const title = 'Романтический квест ко Дню святого Валентина'
 const description = 'Минималистичный интерактивный квест с мимикойнами и финальной точкой.'
-const pageTransition = {
-  name: 'page-soft',
-  mode: 'out-in'
-} as const
 
 useHead({
   meta: [
@@ -29,5 +25,10 @@ useSeoMeta({
 </script>
 
 <template>
-  <NuxtPage :transition="pageTransition" />
+  <div class="relative min-h-screen overflow-x-clip">
+    <UiScrollHeartBackground />
+    <div class="relative z-10">
+      <NuxtPage />
+    </div>
+  </div>
 </template>

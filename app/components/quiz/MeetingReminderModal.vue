@@ -40,7 +40,7 @@ const emit = defineEmits<{
           </UiRomanticButton>
           <button
             type="button"
-            class="rounded-xl px-4 py-2 text-sm text-stone-500 transition hover:bg-stone-100"
+            class="cursor-pointer rounded-xl px-4 py-2 text-sm text-stone-500 hover:bg-stone-100"
             @click="emit('close')"
           >
             Позже
