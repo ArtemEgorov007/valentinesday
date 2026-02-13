@@ -6,7 +6,7 @@ export const quizQuestions: QuizQuestion[] = [
     image: '/placeholders/quiz-1.jpeg',
     prompt: 'Какой из наших моментов для меня навсегда стал точкой, где всё стало «по-настоящему»?',
     choices: [
-      { id: 'a', label: 'Тот смех в Москве в отеле, после которого внутри стало спокойно', isCorrect: true },
+      { id: 'a', label: 'Тот смех в Москве в отеле', isCorrect: true },
       { id: 'b', label: 'Случайный рекламный баннер', isCorrect: false },
       { id: 'c', label: 'Очередь в магазине', isCorrect: false }
     ]
