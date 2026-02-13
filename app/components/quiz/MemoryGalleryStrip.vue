@@ -331,7 +331,7 @@ function unlockGallery() {
             :src="openedCard.src"
             :alt="openedCard.title"
             loading="eager"
-            image-class="h-64 w-full rounded-xl object-cover object-center sm:h-72"
+            image-class="max-h-[72svh] w-full rounded-xl bg-stone-100 object-contain object-center sm:h-72 sm:max-h-none sm:object-cover"
           />
         </template>
         <template v-else>
@@ -344,7 +344,7 @@ function unlockGallery() {
             :muted="true"
             :playsinline="true"
             preload="auto"
-            image-class="h-64 w-full rounded-xl bg-black object-cover object-center sm:h-72"
+            image-class="max-h-[72svh] w-full rounded-xl bg-black object-contain object-center sm:h-72 sm:max-h-none sm:object-cover"
           />
         </template>
 

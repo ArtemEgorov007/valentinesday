@@ -53,9 +53,9 @@ const warmCardNotes = [
           <UiOptimizedImage
             :src="item.image"
             :alt="item.title"
-            image-class="h-40 w-full object-cover object-center sm:h-72"
+            image-class="h-66 w-full object-cover object-center sm:h-72"
           />
-          <div class="flex-1 p-3 sm:p-5">
+          <div class="flex-1 p-4 sm:p-5">
             <p class="text-xs text-stone-500">
               Воспоминание
             </p>
