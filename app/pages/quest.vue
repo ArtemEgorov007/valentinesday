@@ -27,6 +27,7 @@ const destinationAddress = 'https://yandex.ru/maps/-/CPQsEW7f'
 
 const {
   showReminderModal,
+  isAppleDevice,
   reminderDateLabel,
   detectMobile,
   triggerOnUnlock,
@@ -134,6 +135,10 @@ function restartGame() {
   refusalModalVisible.value = false
   runawayYesStyle.value = { transform: 'translate(0px, 0px)' }
   closeReminder()
+}
+
+function openReminderAgain() {
+  showReminderModal.value = true
 }
 
 function moveRunawayYesButton() {
@@ -336,6 +341,24 @@ onBeforeUnmount(() => {
             Пройти ещё раз
           </UiRomanticButton>
         </div>
+
+        <Transition name="bubble-pop">
+          <div
+            v-if="isAppleDevice"
+            class="relative mt-4 ml-auto w-full max-w-xs rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-900 shadow-[0_10px_24px_rgba(225,29,72,0.15)]"
+          >
+            <p class="text-sm font-medium">
+              Не сработало с первого раза?
+            </p>
+            <button
+              type="button"
+              class="mt-2 inline-flex cursor-pointer rounded-lg border border-rose-300 bg-white px-3 py-1.5 text-sm font-medium text-rose-700 hover:bg-rose-100"
+              @click="openReminderAgain"
+            >
+              Попробовать добавить еще раз
+            </button>
+          </div>
+        </Transition>
       </article>
     </section>
   </main>
@@ -370,5 +393,16 @@ onBeforeUnmount(() => {
 .question-prev-enter-from {
   opacity: 0;
   transform: translateX(-24px);
+}
+
+.bubble-pop-enter-active,
+.bubble-pop-leave-active {
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.bubble-pop-enter-from,
+.bubble-pop-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
 }
 </style>

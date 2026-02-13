@@ -270,8 +270,8 @@ onBeforeUnmount(() => {
 <template>
   <canvas
     ref="canvasRef"
-    class="pointer-events-none fixed inset-0"
-    :class="overlayActive ? 'z-50 opacity-100' : 'z-0 opacity-92'"
+    class="pointer-events-none fixed inset-0 -z-10"
+    :class="overlayActive ? 'opacity-100' : 'opacity-92'"
     aria-hidden="true"
   />
 </template>
