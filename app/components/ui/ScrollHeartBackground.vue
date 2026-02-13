@@ -155,10 +155,6 @@ function onRouteStart() {
   launchToCover()
 }
 
-function onRouteFinish() {
-  // Kept intentionally for Nuxt page hook symmetry.
-}
-
 function animate(frameTime: number) {
   if (!ctx) {
     rafId = requestAnimationFrame(animate)
@@ -246,7 +242,6 @@ onMounted(() => {
 
   const nuxtApp = useNuxtApp()
   nuxtApp.hook('page:start', onRouteStart)
-  nuxtApp.hook('page:finish', onRouteFinish)
 
   window.addEventListener('resize', resetCanvas, { passive: true })
 

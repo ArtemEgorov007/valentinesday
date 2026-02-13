@@ -1,4 +1,4 @@
-export function useMeetingReminder(_destinationAddress: string) {
+export function useMeetingReminder() {
   const isAppleDevice = ref(false)
   const showReminderModal = ref(false)
   const appBaseURL = useRuntimeConfig().app.baseURL
