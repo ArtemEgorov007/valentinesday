@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+:root {
+  --font-sans: 'SF Pro Text', 'Avenir Next', 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+
+html,
+body,
+#__nuxt {
+  min-height: 100%;
+}
+
+body {
+  color: #1c1917;
+  background: #f7f5f4;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.page-soft-enter-active,
+.page-soft-leave-active {
+  transition: opacity 0.35s ease, transform 0.35s ease, filter 0.35s ease;
+}
+
+.page-soft-enter-from,
+.page-soft-leave-to {
+  opacity: 0;
+  transform: translateY(10px) scale(0.995);
+  filter: blur(2px);
+}
