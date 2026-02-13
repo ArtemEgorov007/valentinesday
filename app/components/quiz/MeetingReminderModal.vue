@@ -2,11 +2,13 @@
 const props = defineProps<{
   visible: boolean
   reminderDateLabel: string
+  isAppleDevice?: boolean
 }>()
 
 const emit = defineEmits<{
   close: []
   google: []
+  apple: []
   ics: []
 }>()
 </script>
@@ -29,6 +31,12 @@ const emit = defineEmits<{
         </p>
 
         <div class="mt-4 flex flex-col gap-2">
+          <UiRomanticButton
+            v-if="props.isAppleDevice"
+            @click="emit('apple')"
+          >
+            Открыть в Apple Календаре
+          </UiRomanticButton>
           <UiRomanticButton @click="emit('google')">
             Добавить в Google Календарь
           </UiRomanticButton>

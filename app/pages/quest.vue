@@ -27,11 +27,13 @@ const destinationAddress = 'https://yandex.ru/maps/-/CPQsEW7f'
 
 const {
   showReminderModal,
+  isAppleDevice,
   reminderDateLabel,
   detectMobile,
   triggerOnUnlock,
   closeReminder,
   openGoogleCalendar,
+  openAppleCalendar,
   downloadIcsReminder
 } = useMeetingReminder(destinationAddress)
 
@@ -179,8 +181,10 @@ onBeforeUnmount(() => {
 
     <QuizMeetingReminderModal
       :visible="showReminderModal"
+      :is-apple-device="isAppleDevice"
       :reminder-date-label="reminderDateLabel"
       @close="closeReminder"
+      @apple="openAppleCalendar"
       @google="openGoogleCalendar"
       @ics="downloadIcsReminder"
     />
@@ -242,7 +246,7 @@ onBeforeUnmount(() => {
           </p>
         </header>
 
-        <QuizMemoryGalleryStrip />
+        <QuizMemoryGalleryStrip :coins="coins" />
 
         <Transition
           :name="questionTransitionName"

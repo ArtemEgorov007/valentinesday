@@ -1,5 +1,6 @@
 export function useMeetingReminder(destinationAddress: string) {
   const isMobileDevice = ref(false)
+  const isAppleDevice = ref(false)
   const showReminderModal = ref(false)
 
   const meetingTitle = 'Встреча в ресторане «Маленькая Италия»'
@@ -70,8 +71,12 @@ export function useMeetingReminder(destinationAddress: string) {
     }
 
     const ua = navigator.userAgent
+    const isTouchMac = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1
+    isAppleDevice.value = /iPhone|iPad|iPod/i.test(ua) || isTouchMac
+
     isMobileDevice.value = window.matchMedia('(max-width: 768px)').matches
       || /Android|iPhone|iPad|iPod|Mobile/i.test(ua)
+      || isTouchMac
   }
 
   function triggerOnUnlock() {
@@ -92,13 +97,10 @@ export function useMeetingReminder(destinationAddress: string) {
     window.open(googleCalendarUrl.value, '_blank', 'noopener,noreferrer')
   }
 
-  function downloadIcsReminder() {
-    if (!import.meta.client) {
-      return
-    }
-
+  function buildIcsContent() {
     const uid = `little-italy-${meetingWindow.value.start.getTime()}@valentineday`
-    const content = [
+
+    return [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
       'PRODID:-//Valentine Quest//RU',
@@ -113,6 +115,24 @@ export function useMeetingReminder(destinationAddress: string) {
       'END:VEVENT',
       'END:VCALENDAR'
     ].join('\r\n')
+  }
+
+  function openAppleCalendar() {
+    if (!import.meta.client) {
+      return
+    }
+
+    const content = buildIcsContent()
+    const dataUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(content)}`
+    window.location.href = dataUrl
+  }
+
+  function downloadIcsReminder() {
+    if (!import.meta.client) {
+      return
+    }
+
+    const content = buildIcsContent()
 
     const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' })
     const url = URL.createObjectURL(blob)
@@ -125,11 +145,13 @@ export function useMeetingReminder(destinationAddress: string) {
 
   return {
     showReminderModal,
+    isAppleDevice,
     reminderDateLabel,
     detectMobile,
     triggerOnUnlock,
     closeReminder,
     openGoogleCalendar,
+    openAppleCalendar,
     downloadIcsReminder
   }
 }

@@ -9,7 +9,14 @@ type GalleryItem = {
   text: string
 }
 
+const props = defineProps<{
+  coins: number
+}>()
+
 const openedIndex = ref<number | null>(null)
+const isUnlocked = ref(false)
+const isUnlocking = ref(false)
+const unlockThreshold = 300
 
 const extraMemoryImages = [
   '/moments/memory-1.jpeg',
@@ -203,15 +210,42 @@ const tileSizeClasses = computed(() => {
     return itemSizeClass(index)
   })
 })
+
+const pointsLeft = computed(() => Math.max(0, unlockThreshold - props.coins))
+const canUnlock = computed(() => props.coins >= unlockThreshold)
+const isLocked = computed(() => !isUnlocked.value)
+
+watch(() => props.coins, (next, prev) => {
+  if (next <= 0 && prev > next) {
+    isUnlocked.value = false
+    isUnlocking.value = false
+    closeCard()
+  }
+})
+
+function unlockGallery() {
+  if (!canUnlock.value || isUnlocked.value || isUnlocking.value) {
+    return
+  }
+
+  isUnlocking.value = true
+  setTimeout(() => {
+    isUnlocking.value = false
+    isUnlocked.value = true
+  }, 520)
+}
 </script>
 
 <template>
-  <section class="rounded-2xl border border-stone-200 bg-white p-3 shadow-[0_10px_28px_rgba(0,0,0,0.05)] sm:p-4">
+  <section class="relative rounded-2xl border border-stone-200 bg-white p-3 shadow-[0_10px_28px_rgba(0,0,0,0.05)] sm:p-4">
     <p class="text-xs font-medium uppercase tracking-[0.08em] text-stone-500">
       Наши моменты
     </p>
 
-    <div class="mt-2 max-h-[18.5rem] overflow-y-auto rounded-xl border border-stone-200 sm:max-h-[21rem]">
+    <div
+      class="mt-2 max-h-[18.5rem] overflow-y-auto rounded-xl border border-stone-200 sm:max-h-[21rem]"
+      :class="isLocked ? 'blur-[2px]' : ''"
+    >
       <div class="grid grid-flow-dense grid-cols-3 [grid-auto-rows:72px] gap-0 sm:[grid-auto-rows:84px]">
         <button
           v-for="(item, index) in galleryItems"
@@ -219,6 +253,7 @@ const tileSizeClasses = computed(() => {
           type="button"
           class="group relative cursor-pointer overflow-hidden border border-stone-100 bg-stone-100 transition duration-300 hover:z-10 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(0,0,0,0.20)]"
           :class="tileSizeClasses[index] ?? 'col-span-1 row-span-1'"
+          :disabled="isLocked"
           @click="openCard(index)"
         >
           <template v-if="item.type === 'image'">
@@ -253,6 +288,32 @@ const tileSizeClasses = computed(() => {
     <p class="mt-2 text-xs text-stone-500">
       Выбери карточку, чтобы посмотреть подпись
     </p>
+
+    <div
+      v-if="isLocked"
+      class="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-white/55 backdrop-blur-[2px]"
+    >
+      <div class="mx-4 w-full max-w-xs rounded-2xl border border-stone-200 bg-white/95 p-4 text-center shadow-[0_14px_30px_rgba(0,0,0,0.12)]">
+        <p class="text-sm font-semibold text-stone-800">
+          Разблокируй наши моменты
+        </p>
+        <p class="mt-1 text-xs text-stone-600">
+          Набери 300 мимикоинов, чтобы открыть галерею.
+        </p>
+        <p class="mt-2 text-xs text-stone-500">
+          Осталось: <span class="font-semibold text-stone-700">{{ pointsLeft }}</span>
+        </p>
+
+        <button
+          type="button"
+          class="mt-3 inline-flex h-11 w-11 items-center justify-center rounded-full border border-stone-300 bg-white text-lg shadow-sm"
+          :class="canUnlock ? 'cursor-pointer' : 'cursor-not-allowed opacity-70'"
+          @click="unlockGallery"
+        >
+          <span :class="isUnlocking ? 'lock-drop' : ''">🔒</span>
+        </button>
+      </div>
+    </div>
   </section>
 
   <Transition name="gallery-pop">
@@ -315,5 +376,24 @@ const tileSizeClasses = computed(() => {
 .gallery-pop-leave-to {
   opacity: 0;
   transform: translateY(8px) scale(0.97);
+}
+
+.lock-drop {
+  animation: lock-drop 0.52s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes lock-drop {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  45% {
+    transform: translateY(8px) rotate(-8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(44px) rotate(18deg);
+    opacity: 0;
+  }
 }
 </style>
