@@ -260,6 +260,7 @@ function unlockGallery() {
             <UiOptimizedImage
               :src="item.src"
               :alt="item.title"
+              loading="eager"
               image-class="h-full w-full object-cover object-center"
             />
           </template>
@@ -270,7 +271,7 @@ function unlockGallery() {
               :alt="item.title"
               :muted="true"
               :playsinline="true"
-              preload="metadata"
+              preload="auto"
               image-class="h-full w-full object-cover object-center"
             />
             <div class="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
@@ -342,7 +343,7 @@ function unlockGallery() {
             :autoplay="true"
             :muted="true"
             :playsinline="true"
-            preload="metadata"
+            preload="auto"
             image-class="h-64 w-full rounded-xl bg-black object-cover object-center sm:h-72"
           />
         </template>

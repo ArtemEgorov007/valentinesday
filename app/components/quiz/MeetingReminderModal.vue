@@ -2,14 +2,11 @@
 const props = defineProps<{
   visible: boolean
   reminderDateLabel: string
-  isAppleDevice?: boolean
 }>()
 
 const emit = defineEmits<{
   close: []
-  google: []
   apple: []
-  ics: []
 }>()
 </script>
 
@@ -24,27 +21,15 @@ const emit = defineEmits<{
           Напоминание
         </p>
         <h3 class="mt-1 text-xl font-semibold text-stone-900">
-          Запланировать встречу в «Маленькой Италии»?
+          Добавить напоминание о встрече?
         </h3>
         <p class="mt-2 text-sm text-stone-600">
-          Добавим событие на {{ props.reminderDateLabel }} (20:00).
+          Создадим напоминание на {{ props.reminderDateLabel }}.
         </p>
 
         <div class="mt-4 flex flex-col gap-2">
-          <UiRomanticButton
-            v-if="props.isAppleDevice"
-            @click="emit('apple')"
-          >
-            Открыть в Apple Календаре
-          </UiRomanticButton>
-          <UiRomanticButton @click="emit('google')">
-            Добавить в Google Календарь
-          </UiRomanticButton>
-          <UiRomanticButton
-            variant="secondary"
-            @click="emit('ics')"
-          >
-            Скачать напоминание (.ics)
+          <UiRomanticButton @click="emit('apple')">
+            Добавить напоминание
           </UiRomanticButton>
           <button
             type="button"

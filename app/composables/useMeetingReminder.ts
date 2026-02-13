@@ -1,22 +1,21 @@
 export function useMeetingReminder(destinationAddress: string) {
-  const isMobileDevice = ref(false)
   const isAppleDevice = ref(false)
   const showReminderModal = ref(false)
 
   const meetingTitle = 'Встреча в ресторане «Маленькая Италия»'
   const meetingAddress = '10 Italianskaya Street, St. Petersburg, Russia, 191011'
-  const meetingDescription = `Ужин в 20:00. Локация: ${destinationAddress}`
+  const meetingDescription = `Напоминание о встрече в 18:00. Локация: ${destinationAddress}`
 
   function getMeetingWindow() {
     const now = new Date()
     const currentYear = now.getFullYear()
-    const thisYearMeeting = new Date(currentYear, 1, 14, 20, 0, 0, 0)
+    const thisYearMeeting = new Date(currentYear, 1, 14, 18, 0, 0, 0)
     const start = now.getTime() <= thisYearMeeting.getTime()
       ? thisYearMeeting
-      : new Date(currentYear + 1, 1, 14, 20, 0, 0, 0)
+      : new Date(currentYear + 1, 1, 14, 18, 0, 0, 0)
 
     const end = new Date(start)
-    end.setHours(22, 0, 0, 0)
+    end.setHours(19, 0, 0, 0)
 
     return { start, end }
   }
@@ -28,16 +27,6 @@ export function useMeetingReminder(destinationAddress: string) {
     hour: '2-digit',
     minute: '2-digit'
   }).format(meetingWindow.value.start))
-
-  function formatGoogleDate(date: Date) {
-    const y = date.getFullYear()
-    const m = String(date.getMonth() + 1).padStart(2, '0')
-    const d = String(date.getDate()).padStart(2, '0')
-    const h = String(date.getHours()).padStart(2, '0')
-    const min = String(date.getMinutes()).padStart(2, '0')
-    const s = String(date.getSeconds()).padStart(2, '0')
-    return `${y}${m}${d}T${h}${min}${s}`
-  }
 
   function formatIcsDateUtc(date: Date) {
     return date.toISOString().replace(/[-:]/g, '').replace('.000', '')
@@ -51,20 +40,6 @@ export function useMeetingReminder(destinationAddress: string) {
       .replace(/\n/g, '\\n')
   }
 
-  const googleCalendarUrl = computed(() => {
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    const dates = `${formatGoogleDate(meetingWindow.value.start)}/${formatGoogleDate(meetingWindow.value.end)}`
-    const params = new URLSearchParams({
-      action: 'TEMPLATE',
-      text: meetingTitle,
-      dates,
-      details: meetingDescription,
-      location: meetingAddress,
-      ctz: timezone
-    })
-    return `https://calendar.google.com/calendar/render?${params.toString()}`
-  })
-
   function detectMobile() {
     if (!import.meta.client) {
       return
@@ -73,28 +48,16 @@ export function useMeetingReminder(destinationAddress: string) {
     const ua = navigator.userAgent
     const isTouchMac = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1
     isAppleDevice.value = /iPhone|iPad|iPod/i.test(ua) || isTouchMac
-
-    isMobileDevice.value = window.matchMedia('(max-width: 768px)').matches
-      || /Android|iPhone|iPad|iPod|Mobile/i.test(ua)
-      || isTouchMac
   }
 
   function triggerOnUnlock() {
-    if (isMobileDevice.value) {
+    if (isAppleDevice.value) {
       showReminderModal.value = true
     }
   }
 
   function closeReminder() {
     showReminderModal.value = false
-  }
-
-  function openGoogleCalendar() {
-    if (!import.meta.client) {
-      return
-    }
-
-    window.open(googleCalendarUrl.value, '_blank', 'noopener,noreferrer')
   }
 
   function buildIcsContent() {
@@ -112,6 +75,11 @@ export function useMeetingReminder(destinationAddress: string) {
       `SUMMARY:${escapeIcs(meetingTitle)}`,
       `DESCRIPTION:${escapeIcs(meetingDescription)}`,
       `LOCATION:${escapeIcs(meetingAddress)}`,
+      'BEGIN:VALARM',
+      'TRIGGER:-PT30M',
+      'ACTION:DISPLAY',
+      'DESCRIPTION:Напоминание о встрече',
+      'END:VALARM',
       'END:VEVENT',
       'END:VCALENDAR'
     ].join('\r\n')
@@ -125,22 +93,7 @@ export function useMeetingReminder(destinationAddress: string) {
     const content = buildIcsContent()
     const dataUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(content)}`
     window.location.href = dataUrl
-  }
-
-  function downloadIcsReminder() {
-    if (!import.meta.client) {
-      return
-    }
-
-    const content = buildIcsContent()
-
-    const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'vstrecha-malenkaya-italiya.ics'
-    link.click()
-    URL.revokeObjectURL(url)
+    closeReminder()
   }
 
   return {
@@ -150,8 +103,6 @@ export function useMeetingReminder(destinationAddress: string) {
     detectMobile,
     triggerOnUnlock,
     closeReminder,
-    openGoogleCalendar,
-    openAppleCalendar,
-    downloadIcsReminder
+    openAppleCalendar
   }
 }
